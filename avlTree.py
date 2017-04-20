@@ -67,6 +67,10 @@ class AVLTree(object):
 
     # node's child height counts 2
     # single left rotate
+    # node.left, node = node, node.right
+    # eg:
+    # node.key = 35, node.left.key = 30, node.left.left.key = 25
+    # Rotate to: node.key = 30, node.left.key = 25, node.right.key = 35
     def singleLeftRotate(self, node):
         k1 = node.left
         node.left = k1.right
@@ -75,7 +79,9 @@ class AVLTree(object):
         k1.height = max(self.height(k1.left), node.height) + 1
         return k1
 
+    # node's child height counts 2
     # single right rotate
+    # node.right.left, node.right = node.right, node
     def singleRightRotate(self, node):
         k1 = node.right
         node.right = k1.left
@@ -85,11 +91,17 @@ class AVLTree(object):
         return k1
 
     # double left rotate
+    # node.right.left, node.right, node = node, node.right, node.left
+    # 1.singleRightRotate
+    # 2.singleLeftRotate
     def doubleLeftRotate(self, node):
         node.left = self.singleRightRotate(node.left)
         return self.singleLeftRotate(node)
 
     # double right rotate
+    # node.left.right.left, node.left.right.right, node.left.right = node.left.right, node.right.left, node.right
+    # 1. singleLeftRotate
+    # 2. singleRightRotate
     def doubleRightRotate(self, node):
         node.right = self.singleLeftRotate(node.right)
         return self.singleRightRotate(node)
