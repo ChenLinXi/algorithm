@@ -116,41 +116,65 @@ class AVLTree(object):
         if node is None:
             node = Node(key)
         elif key < node.key:
+            # 1,key is smaller than node.key
             node.left = self._put(key, node.left)
+            # after putting, check the children's height
             if (self.height(node.left) - self.height(node.right)) == 2:
+                # if key is smaller then node.left.key, then single left rotate
                 if key < node.left.key:
                     node = self.singleLeftRotate(node)
+                # key is bigger than node.left.key, then double left rotate
                 else:
                     node = self.doubleLeftRotate(node)
 
         elif key > node.key:
+            # 2.key is bigger than node.key
             node.right = self._put(key, node.right)
+            # after putting, check the children's height
             if (self.height(node.right) - self.height(node.left)) == 2:
+                # key is smaller than node.right.key, so double right rotate
                 if key < node.right.key:
                     node = self.doubleRightRotate(node)
+                # if key is bigger than node.right.key, then single right rotate
                 else:
                     node = self.singleRightRotate(node)
-
-        node.height = max(self.height(node.right), self.height(node.left))+1
+        # reset node height
+        node.height = max(self.height(node.right), self.height(node.left)) + 1
+        # return node
         return node
 
     def delete(self, key):
         self.root = self.remove(key, self.root)
 
+    # 1.current node has no child, remove it directly
+    # 2.current node has one left child or right child, do single left or right rotate
+    # 3.current node is the one which will be removed, but it has left&right child's tree
+    #   if right child tree's height is bigger than the other, take the one which is smallest in right child tree
+    #   and take place of the current node;
+    #   else if the left child tree's height is bigger than the other, take the one which is biggest in left child tree
+    #   and take place of the current node
+    #   after remove and rotate, remember reset node's height
+    # 4. current node is not the one to be removed, then do left or right Recursive work and check the balance of tree
     def remove(self, key, node):
         if node is None:
             raise KeyError,'Error, key not in tree'
+
+        # key is smaller than node.key, do left Recursive work
         elif key < node.key:
             node.left = self.remove(key, node.left)
+            # after Recursive, check node's child height
             if (self.height(node.right) - self.height(node.left)) == 2:
                 if self.height(node.right.right) >= self.height(node.right.left):
                     node = self.singleRightRotate(node)
                 else:
                     node = self.doubleRightRotate(node)
+            # reset node height
             node.height = max(self.height(node.left), self.height(node.right)) + 1
 
+        # key is bigger than node key, do right Recursive work
         elif key > node.key:
             node.right = self.remove(key, node.right)
+            # after Recursive, check node's child height
             if (self.height(node.left) - self.height(node.right)) == 2:
                 if self.height(node.left.left) >= self.height(node.left.right):
                     node = self.singleLeftRotate(node)
@@ -158,6 +182,7 @@ class AVLTree(object):
                     node = self.doubleLeftRotate(node)
             node.height = max(self.height(node.left), self.height(node.right)) + 1
 
+        # node has left&right child
         elif node.left and node.right:
             if node.left.height <= node.right.height:
                 minNode = self._findMin(node.right)
@@ -167,6 +192,7 @@ class AVLTree(object):
                 maxNode = self._findMax(node.left)
                 node.key = maxNode.key
                 node.left = self.remove(node.key, node.left)
+            # reset node height
             node.height = max(self.height(node.left), self.height(node.right)) + 1
 
         else:
