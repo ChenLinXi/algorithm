@@ -76,6 +76,7 @@ class AVLTree(object):
         node.left = k1.right
         k1.right = node
         node.height = max(self.height(node.right), self.height(node.left)) + 1
+        # rotate node as to be the k1's right child, then reset k1's height
         k1.height = max(self.height(k1.left), node.height) + 1
         return k1
 
@@ -87,6 +88,7 @@ class AVLTree(object):
         node.right = k1.left
         k1.left = node
         node.height = max(self.height(node.right), self.height(node.left)) + 1
+        # rotate node as to be the k1's right child, then reset k1's height
         k1.height = max(self.height(k1.right), node.height) + 1
         return k1
 
